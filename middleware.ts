@@ -1,9 +1,9 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Refreshes the auth session on every request and protects /admin routes
-// by role. Runs at the edge, before any page renders.
-export async function updateSession(request: NextRequest) {
+// Refreshes the auth session and protects /admin routes by role.
+// Runs at the edge, before any page renders.
+export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request: { headers: request.headers } });
 
   const supabase = createServerClient(
@@ -57,3 +57,9 @@ export async function updateSession(request: NextRequest) {
 
   return response;
 }
+
+// Only run this middleware on /admin routes — the homepage and other
+// public pages don't need an auth check on every request.
+export const config = {
+  matcher: ["/admin/:path*"]
+};
