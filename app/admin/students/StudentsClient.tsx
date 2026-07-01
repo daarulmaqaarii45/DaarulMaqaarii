@@ -140,7 +140,9 @@ export default function StudentsClient({
                     className="text-xs font-semibold text-danger hover:underline"
                     onClick={() => {
                       if (confirm(`Remove ${s.full_name}?`)) {
-                        startTransition(() => deleteStudent(s.id));
+                        startTransition(() => {
+                          deleteStudent(s.id);
+                        });
                       }
                     }}
                   >
