@@ -12,14 +12,29 @@ create table if not exists profiles (
   created_at timestamptz not null default now()
 );
 
--- Auto-create a profile row whenever a new auth user signs up.
--- Role defaults to 'student' — promote to admin/teacher manually in the
--- table editor for staff accounts (see README "Create your first admin").
+-- Auto-create a profile row whenever a new auth user signs up — whether
+-- via email/password or Google OAuth. Reads full_name and role from the
+-- signup form when present (see app/signup/actions.ts), and falls back to
+-- Google's own metadata keys, then the email, if not.
+-- The role is sanitized here too: even if someone tampers with the client
+-- request, only 'student' or 'parent' can ever be self-assigned. Admin and
+-- teacher roles are only ever set manually in the table editor.
 create or replace function public.handle_new_user()
 returns trigger as $$
+declare
+  requested_role text := new.raw_user_meta_data->>'role';
+  safe_role text := case when requested_role = 'parent' then 'parent' else 'student' end;
 begin
   insert into public.profiles (id, full_name, role)
-  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', new.email), 'student');
+  values (
+    new.id,
+    coalesce(
+      new.raw_user_meta_data->>'full_name',
+      new.raw_user_meta_data->>'name',   -- Google OAuth uses "name"
+      new.email
+    ),
+    safe_role
+  );
   return new;
 end;
 $$ language plpgsql security definer;
