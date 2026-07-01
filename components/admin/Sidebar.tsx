@@ -29,7 +29,7 @@ export default function Sidebar({ fullName, role }: { fullName: string; role: st
       <div className="flex items-center gap-2 px-5 py-5">
         <Image src="/logo.jpg" alt="Logo" width={32} height={32} className="rounded-full" />
         <span className="font-display text-sm font-semibold leading-tight">
-          Daarul Maqaaril
+          Daarul Maqaarii
         </span>
       </div>
 
