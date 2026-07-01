@@ -1,5 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import { login } from "./actions";
+import GoogleButton from "@/components/admin/GoogleButton";
 
 export default function LoginPage({
   searchParams
@@ -31,6 +33,14 @@ export default function LoginPage({
           </p>
         )}
 
+        <GoogleButton next={searchParams.next ?? "/admin"} />
+
+        <div className="my-4 flex items-center gap-3 text-xs text-muted">
+          <div className="h-px flex-1 bg-border" />
+          or
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
         <form action={login} className="space-y-4">
           <input type="hidden" name="next" value={searchParams.next ?? "/admin"} />
           <div>
@@ -45,8 +55,12 @@ export default function LoginPage({
             Sign in
           </button>
         </form>
+
+        <p className="mt-4 text-center text-sm text-muted">
+          New here?{" "}
+          <Link href="/signup" className="font-semibold text-purple hover:underline">Create an account</Link>
+        </p>
       </div>
     </main>
   );
 }
-
